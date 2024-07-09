@@ -10,7 +10,7 @@ Fast .env file parser with variable interpolation, multi-file layering, and type
 
 ```toml
 [dependencies]
-philiprehberger-dotenv = "0.1"
+philiprehberger-dotenv = "0.1.0"
 ```
 
 ## Usage
