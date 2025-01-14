@@ -3,6 +3,7 @@
 [![CI](https://github.com/philiprehberger/rs-dotenv/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rs-dotenv/actions/workflows/ci.yml)
 [![Crates.io](https://img.shields.io/crates/v/philiprehberger-dotenv.svg)](https://crates.io/crates/philiprehberger-dotenv)
 [![License](https://img.shields.io/github/license/philiprehberger/rs-dotenv)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
 
 Fast .env file parser with variable interpolation, multi-file layering, and type-safe loading
 
