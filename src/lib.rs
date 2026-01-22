@@ -462,6 +462,18 @@ impl DotEnv {
         }
     }
 
+    /// Get a value parsed as a specific type, returning a default if the key is missing or
+    /// the value cannot be parsed.
+    ///
+    /// This is the fallible counterpart to [`get_as`](DotEnv::get_as): instead of returning
+    /// an error, it silently falls back to `default`.
+    pub fn get_or_default<T: FromStr>(&self, key: &str, default: T) -> T {
+        self.vars
+            .get(key)
+            .and_then(|v| v.parse::<T>().ok())
+            .unwrap_or(default)
+    }
+
     /// Split a value by the given separator into a list of strings.
     ///
     /// Returns an empty vector if the key is not found.
@@ -796,6 +808,29 @@ mod tests {
     fn test_whitespace_around_key() {
         let env = parse("  KEY  =value");
         assert_eq!(env.get("KEY"), Some("value"));
+    }
+
+    #[test]
+    fn test_get_or_default_returns_parsed_value() {
+        let env = parse("PORT=8080\nDEBUG=true\nRATIO=3.14");
+        assert_eq!(env.get_or_default::<u16>("PORT", 3000), 8080);
+        assert_eq!(env.get_or_default::<bool>("DEBUG", false), true);
+        assert_eq!(env.get_or_default::<f64>("RATIO", 1.0), 3.14);
+    }
+
+    #[test]
+    fn test_get_or_default_returns_default_on_missing() {
+        let env = parse("OTHER=value");
+        assert_eq!(env.get_or_default::<u16>("PORT", 3000), 3000);
+        assert_eq!(env.get_or_default::<bool>("DEBUG", true), true);
+        assert_eq!(env.get_or_default::<String>("NAME", "app".to_string()), "app");
+    }
+
+    #[test]
+    fn test_get_or_default_returns_default_on_parse_failure() {
+        let env = parse("PORT=not_a_number\nDEBUG=maybe");
+        assert_eq!(env.get_or_default::<u16>("PORT", 3000), 3000);
+        assert_eq!(env.get_or_default::<bool>("DEBUG", false), false);
     }
 
     #[test]

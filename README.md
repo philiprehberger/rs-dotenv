@@ -10,7 +10,7 @@ Fast .env file parser with variable interpolation, multi-file layering, and type
 
 ```toml
 [dependencies]
-philiprehberger-dotenv = "0.1.1"
+philiprehberger-dotenv = "0.2.0"
 ```
 
 ## Usage
@@ -25,6 +25,7 @@ let env = DotEnv::load()?;
 let port: u16 = env.get_as("PORT")?;
 let debug: bool = env.get_bool("DEBUG")?;
 let name = env.get_or("APP_NAME", "my-app");
+let timeout: u64 = env.get_or_default("TIMEOUT_SECS", 30);
 
 // Validate required variables
 env.require(&["DATABASE_URL", "SECRET_KEY"])?;
@@ -38,7 +39,8 @@ env.require(&["DATABASE_URL", "SECRET_KEY"])?;
 | `DotEnv::load_from(path)` | Load from specific file |
 | `DotEnv::load_layered(paths)` | Load multiple files with priority |
 | `.get(key)` | Get raw string value |
-| `.get_or(key, default)` | Get with default |
+| `.get_or(key, default)` | Get with string default |
+| `.get_or_default::<T>(key, default)` | Get with typed default (returns default on missing or parse failure) |
 | `.get_as::<T>(key)` | Type-safe parsing |
 | `.get_bool(key)` | Parse boolean values |
 | `.get_list(key, sep)` | Split value into list |
