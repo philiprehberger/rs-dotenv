@@ -1,6 +1,10 @@
 # rs-dotenv
 
-Fast .env file parser with variable interpolation, multi-file layering, and type-safe loading.
+[![CI](https://github.com/philiprehberger/rs-dotenv/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rs-dotenv/actions/workflows/ci.yml)
+[![Crates.io](https://img.shields.io/crates/v/philiprehberger-dotenv.svg)](https://crates.io/crates/philiprehberger-dotenv)
+[![License](https://img.shields.io/github/license/philiprehberger/rs-dotenv)](LICENSE)
+
+Fast .env file parser with variable interpolation, multi-file layering, and type-safe loading
 
 ## Installation
 
@@ -26,32 +30,6 @@ let name = env.get_or("APP_NAME", "my-app");
 env.require(&["DATABASE_URL", "SECRET_KEY"])?;
 ```
 
-### Multi-file layering
-
-```rust
-use philiprehberger_dotenv::DotEnv;
-
-// Later files override earlier ones
-let env = DotEnv::load_layered(&[".env", ".env.local"])?;
-```
-
-### Variable interpolation
-
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DATABASE_URL=postgres://${DB_HOST}:${DB_PORT}/mydb
-```
-
-### Load into process environment
-
-```rust
-use philiprehberger_dotenv;
-
-// Load .env and set all vars into process environment
-philiprehberger_dotenv::load_and_apply()?;
-```
-
 ## API
 
 | Function / Type | Description |
@@ -67,6 +45,13 @@ philiprehberger_dotenv::load_and_apply()?;
 | `.require(keys)` | Validate required variables |
 | `.apply()` | Set vars into process environment |
 | `load_and_apply()` | Load .env and apply to process |
+
+## Development
+
+```bash
+cargo test
+cargo clippy -- -D warnings
+```
 
 ## License
 

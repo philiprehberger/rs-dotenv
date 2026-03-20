@@ -2,9 +2,12 @@
 name = "philiprehberger-dotenv"
 version = "0.1.0"
 edition = "2021"
+rust-version = "1.70"
 authors = ["Philip Rehberger"]
 description = "Fast .env file parser with variable interpolation, multi-file layering, and type-safe loading"
 license = "MIT"
+readme = "README.md"
 repository = "https://github.com/philiprehberger/rs-dotenv"
+documentation = "https://docs.rs/philiprehberger-dotenv"
 keywords = ["dotenv", "env", "environment", "config", "development"]
 categories = ["config", "development-tools"]
