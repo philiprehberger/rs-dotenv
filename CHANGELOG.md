@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.0] - 2026-04-05
+
+- Add `get_or_default<T: FromStr>(key, default)` method for typed access with fallback on missing key or parse failure
+
 ## 0.1.2 (2026-03-31)
 
 - Standardize README to 3-badge format with emoji Support section
