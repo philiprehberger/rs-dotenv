@@ -10,7 +10,7 @@ Fast .env file parser with variable interpolation, multi-file layering, and type
 
 ```toml
 [dependencies]
-philiprehberger-dotenv = "0.2.0"
+philiprehberger-dotenv = "0.3.0"
 ```
 
 ## Usage
@@ -38,6 +38,7 @@ env.require(&["DATABASE_URL", "SECRET_KEY"])?;
 | `DotEnv::load()` | Load `.env` from current directory |
 | `DotEnv::load_from(path)` | Load from specific file |
 | `DotEnv::load_layered(paths)` | Load multiple files with priority |
+| `DotEnv::from_string(content)` | Parse `.env`-formatted content from a string |
 | `.get(key)` | Get raw string value |
 | `.get_or(key, default)` | Get with string default |
 | `.get_or_default::<T>(key, default)` | Get with typed default (returns default on missing or parse failure) |
@@ -45,7 +46,11 @@ env.require(&["DATABASE_URL", "SECRET_KEY"])?;
 | `.get_bool(key)` | Parse boolean values |
 | `.get_list(key, sep)` | Split value into list |
 | `.require(keys)` | Validate required variables |
+| `.set(key, value)` | Programmatically set or overwrite a key |
+| `.merge(other)` | Merge another `DotEnv`; keys from `other` override existing |
 | `.apply()` | Set vars into process environment |
+| `.len()` | Number of loaded variables |
+| `.is_empty()` | True if no variables are loaded |
 | `load_and_apply()` | Load .env and apply to process |
 
 ## Development

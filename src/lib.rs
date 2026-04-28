@@ -527,6 +527,77 @@ impl DotEnv {
     pub fn iter(&self) -> impl Iterator<Item = (&str, &str)> {
         self.vars.iter().map(|(k, v)| (k.as_str(), v.as_str()))
     }
+
+    /// Return the number of loaded variables.
+    pub fn len(&self) -> usize {
+        self.vars.len()
+    }
+
+    /// Return `true` if no variables have been loaded.
+    pub fn is_empty(&self) -> bool {
+        self.vars.is_empty()
+    }
+
+    /// Set or overwrite a key in the loaded environment.
+    ///
+    /// Useful for layering programmatic overrides on top of values parsed
+    /// from a file. Note that this does not perform variable interpolation
+    /// on the supplied value; the value is stored verbatim.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use philiprehberger_dotenv::DotEnv;
+    /// let mut env = DotEnv::from_string("PORT=3000").unwrap();
+    /// env.set("PORT", "8080");
+    /// assert_eq!(env.get("PORT"), Some("8080"));
+    /// ```
+    pub fn set(&mut self, key: impl Into<String>, value: impl Into<String>) {
+        self.vars.insert(key.into(), value.into());
+    }
+
+    /// Merge another `DotEnv` into this one. Keys from `other` overwrite
+    /// existing keys.
+    ///
+    /// This is the programmatic equivalent of [`DotEnv::load_layered`] for
+    /// `DotEnv` instances that were already loaded from different sources.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use philiprehberger_dotenv::DotEnv;
+    /// let mut base = DotEnv::from_string("HOST=localhost\nPORT=3000").unwrap();
+    /// let overrides = DotEnv::from_string("PORT=8080").unwrap();
+    /// base.merge(overrides);
+    /// assert_eq!(base.get("HOST"), Some("localhost"));
+    /// assert_eq!(base.get("PORT"), Some("8080"));
+    /// ```
+    pub fn merge(&mut self, other: DotEnv) {
+        for (k, v) in other.vars {
+            self.vars.insert(k, v);
+        }
+    }
+
+    /// Create a `DotEnv` from a string of `.env`-formatted content.
+    ///
+    /// This is the public entry point for parsing in-memory content (for
+    /// example, from a network request or test fixture) without writing it
+    /// to disk first.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`DotEnvError`] if the content cannot be parsed.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use philiprehberger_dotenv::DotEnv;
+    /// let env = DotEnv::from_string("KEY=value").unwrap();
+    /// assert_eq!(env.get("KEY"), Some("value"));
+    /// ```
+    pub fn from_string(content: &str) -> Result<DotEnv, DotEnvError> {
+        DotEnv::from_str(content)
+    }
 }
 
 /// Load environment variables from a `.env` file in the current directory.
@@ -831,6 +902,44 @@ mod tests {
         let env = parse("PORT=not_a_number\nDEBUG=maybe");
         assert_eq!(env.get_or_default::<u16>("PORT", 3000), 3000);
         assert_eq!(env.get_or_default::<bool>("DEBUG", false), false);
+    }
+
+    #[test]
+    fn test_len_and_is_empty() {
+        let env = parse("");
+        assert!(env.is_empty());
+        assert_eq!(env.len(), 0);
+
+        let env = parse("A=1\nB=2");
+        assert!(!env.is_empty());
+        assert_eq!(env.len(), 2);
+    }
+
+    #[test]
+    fn test_set_overwrites_existing() {
+        let mut env = parse("PORT=3000");
+        env.set("PORT", "8080");
+        assert_eq!(env.get("PORT"), Some("8080"));
+        env.set("NEW", "value");
+        assert_eq!(env.get("NEW"), Some("value"));
+        assert_eq!(env.len(), 2);
+    }
+
+    #[test]
+    fn test_merge_overrides_existing_keys() {
+        let mut base = parse("HOST=localhost\nPORT=3000");
+        let overrides = parse("PORT=8080\nDEBUG=true");
+        base.merge(overrides);
+        assert_eq!(base.get("HOST"), Some("localhost"));
+        assert_eq!(base.get("PORT"), Some("8080"));
+        assert_eq!(base.get("DEBUG"), Some("true"));
+        assert_eq!(base.len(), 3);
+    }
+
+    #[test]
+    fn test_from_string_public_api() {
+        let env = DotEnv::from_string("FOO=bar").unwrap();
+        assert_eq!(env.get("FOO"), Some("bar"));
     }
 
     #[test]

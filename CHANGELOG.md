@@ -1,6 +1,14 @@
 # Changelog
 
-## [0.2.0] - 2026-04-05
+## 0.3.0 (2026-04-27)
+
+- Add `DotEnv::set(key, value)` for programmatic overrides of loaded variables
+- Add `DotEnv::merge(other)` to layer one `DotEnv` on top of another
+- Add `DotEnv::from_string(content)` public constructor for in-memory parsing
+- Add `DotEnv::len()` and `DotEnv::is_empty()` accessors
+- Standardize CHANGELOG entry format to `## X.Y.Z (YYYY-MM-DD)`
+
+## 0.2.0 (2026-04-05)
 
 - Add `get_or_default<T: FromStr>(key, default)` method for typed access with fallback on missing key or parse failure
 
